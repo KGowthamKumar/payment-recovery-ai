@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import "./App.css";
 
@@ -5,16 +6,14 @@ function App() {
 
     const [payments, setPayments] = useState([]);
     const [recoveryResult, setRecoveryResult] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loadingPaymentId, setLoadingPaymentId] = useState(null);
     const [error, setError] = useState("");
-
 
     // =================================
     // FETCH PAYMENTS
     // =================================
 
     const fetchPayments = async () => {
-
         try {
 
             const response = await fetch(
@@ -33,15 +32,12 @@ function App() {
             );
 
             setError("Could not load payments");
-
         }
     };
 
 
     useEffect(() => {
-
         fetchPayments();
-
     }, []);
 
 
@@ -66,7 +62,9 @@ function App() {
 
         try {
 
-            setLoading(true);
+            // Only the clicked payment is loading
+            setLoadingPaymentId(paymentId);
+
             setError("");
             setRecoveryResult(null);
 
@@ -96,6 +94,8 @@ function App() {
 
             setRecoveryResult(data);
 
+
+            // Refresh payments
             await fetchPayments();
 
 
@@ -110,10 +110,11 @@ function App() {
                 "Could not connect to the backend"
             );
 
+
         } finally {
 
-            setLoading(false);
-
+            // Stop loading
+            setLoadingPaymentId(null);
         }
     };
 
@@ -140,6 +141,7 @@ function App() {
 
         <div className="app">
 
+
             {/* =========================
                 HEADER
             ========================= */}
@@ -161,11 +163,13 @@ function App() {
             </header>
 
 
+
             {/* =========================
                 DASHBOARD CARDS
             ========================= */}
 
             <section className="dashboard">
+
 
                 <div className="stat-card">
 
@@ -178,6 +182,7 @@ function App() {
                     </strong>
 
                 </div>
+
 
 
                 <div className="stat-card">
@@ -193,6 +198,7 @@ function App() {
                 </div>
 
 
+
                 <div className="stat-card">
 
                     <span>
@@ -205,7 +211,9 @@ function App() {
 
                 </div>
 
+
             </section>
+
 
 
             {/* =========================
@@ -225,6 +233,7 @@ function App() {
             }
 
 
+
             {/* =========================
                 RECOVERY RESULT
             ========================= */}
@@ -233,6 +242,7 @@ function App() {
                 recoveryResult && (
 
                     <section className="recovery-panel">
+
 
                         <div className="section-title">
 
@@ -243,7 +253,11 @@ function App() {
                         </div>
 
 
+
                         <div className="recovery-grid">
+
+
+                            {/* AI ACTION */}
 
                             <div>
 
@@ -252,16 +266,21 @@ function App() {
                                 </span>
 
                                 <strong>
+
                                     {
                                         recoveryResult
                                             .result
                                             .aiDecision
                                             .action
                                     }
+
                                 </strong>
 
                             </div>
 
+
+
+                            {/* GUARDRAIL */}
 
                             <div>
 
@@ -285,6 +304,9 @@ function App() {
                             </div>
 
 
+
+                            {/* FINAL STATUS */}
+
                             <div>
 
                                 <span>
@@ -304,8 +326,12 @@ function App() {
 
                             </div>
 
+
                         </div>
 
+
+
+                        {/* AI REASON */}
 
                         <div className="reason">
 
@@ -314,16 +340,21 @@ function App() {
                             </strong>
 
                             <p>
+
                                 {
                                     recoveryResult
                                         .result
                                         .aiDecision
                                         .reason
                                 }
+
                             </p>
 
                         </div>
 
+
+
+                        {/* RECOVERY RESULT */}
 
                         {
                             recoveryResult
@@ -337,12 +368,14 @@ function App() {
                                     </strong>
 
                                     <p>
+
                                         {
                                             recoveryResult
                                                 .result
                                                 .recoveryResult
                                                 .message
                                         }
+
                                     </p>
 
                                 </div>
@@ -350,10 +383,12 @@ function App() {
                             )
                         }
 
+
                     </section>
 
                 )
             }
+
 
 
             {/* =========================
@@ -361,6 +396,7 @@ function App() {
             ========================= */}
 
             <section className="payments-section">
+
 
                 <div className="section-title">
 
@@ -373,6 +409,7 @@ function App() {
                     </span>
 
                 </div>
+
 
 
                 {
@@ -393,7 +430,9 @@ function App() {
 
                     ) : (
 
+
                         <div className="payment-list">
+
 
                             {
                                 payments.map((payment) => (
@@ -403,7 +442,11 @@ function App() {
                                         key={payment.paymentId}
                                     >
 
+
+                                        {/* PAYMENT HEADER */}
+
                                         <div className="payment-main">
+
 
                                             <div>
 
@@ -414,36 +457,50 @@ function App() {
                                                 </h3>
 
                                                 <p>
+
                                                     {
                                                         payment.paymentMethod
                                                     }
+
                                                     {" • "}
+
                                                     {
                                                         payment.failureReason
                                                     }
+
                                                 </p>
 
                                             </div>
 
 
+
                                             <div className="amount">
 
-                                                ₹{
+                                                ₹
+                                                {
                                                     payment.amount
                                                 }
 
                                             </div>
 
+
                                         </div>
 
 
+
+                                        {/* PAYMENT DETAILS */}
+
                                         <div className="payment-details">
+
+
+                                            {/* STATUS */}
 
                                             <div>
 
                                                 <span>
                                                     Status
                                                 </span>
+
 
                                                 <span
                                                     className={
@@ -452,13 +509,18 @@ function App() {
                                                         )}`
                                                     }
                                                 >
+
                                                     {
                                                         payment.status
                                                     }
+
                                                 </span>
 
                                             </div>
 
+
+
+                                            {/* ATTEMPTS */}
 
                                             <div>
 
@@ -467,15 +529,21 @@ function App() {
                                                 </span>
 
                                                 <strong>
+
                                                     {
                                                         payment.attemptCount
                                                     }
+
                                                 </strong>
 
                                             </div>
 
 
+
+                                            {/* ACTION */}
+
                                             <div className="action">
+
 
                                                 {
                                                     payment.status === "FAILED" && (
@@ -486,11 +554,16 @@ function App() {
                                                                     payment.paymentId
                                                                 )
                                                             }
-                                                            disabled={loading}
+
+                                                            disabled={
+                                                                loadingPaymentId ===
+                                                                payment.paymentId
+                                                            }
                                                         >
 
                                                             {
-                                                                loading
+                                                                loadingPaymentId ===
+                                                                payment.paymentId
                                                                     ? "Recovering..."
                                                                     : "Recover Payment"
                                                             }
@@ -500,25 +573,30 @@ function App() {
                                                     )
                                                 }
 
+
                                             </div>
 
+
                                         </div>
+
 
                                     </div>
 
                                 ))
                             }
 
+
                         </div>
 
                     )
-
                 }
+
 
             </section>
 
+
         </div>
+
     );
 }
-
 export default App;

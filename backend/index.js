@@ -35,7 +35,13 @@ mongoose.connect(process.env.MONGODB_URI)
         );
     });
 
+mongoose.connection.once("open", async () => {
+    console.log("MongoDB connected");
+    console.log("Database:", mongoose.connection.name);
 
+    const transactions = await Transaction.find({});
+    console.log("Transactions:", transactions);
+});
 
 // RULES
 
