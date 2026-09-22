@@ -14,7 +14,7 @@ app.use(express.json());
 
 // GEMINI SETUP
 
-
+// this is debugging
 const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
